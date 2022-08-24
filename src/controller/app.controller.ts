@@ -1,5 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AppService } from '../service/app.service';
+import { CreateBookingDto } from '../data/CreateBookingDto';
 
 @Controller()
 export class AppController {
@@ -25,9 +26,9 @@ export class AppController {
     console.log(result);
     return result;
   }
-  /*
-  @Post("/")
+  @Post('/booking')
   createBooking(@Body() bookDto: CreateBookingDto) {
-    this.appService.createBooking();
-  }*/
+    console.log(bookDto);
+    return this.appService.createBooking(bookDto);
+  }
 }

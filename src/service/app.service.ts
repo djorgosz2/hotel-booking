@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import hotelData from '../data/fakeHotels';
+import FakeHotels from '../data/fakeHotels';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class AppService {
     const fromTime = new Date(from).getTime();
     const toTime = new Date(from).getTime();
     const filters = _.pickBy({ country, city }, _.identity);
-    const inCityHotels = _.filter(hotelData, filters);
+    const inCityHotels = _.filter(FakeHotels.fakeHotels, filters);
     return inCityHotels.filter((hotel) =>
       this.isHotelBookable(hotel, fromTime, toTime, peopleCount),
     );
@@ -36,5 +36,25 @@ export class AppService {
       }
     });
     return hotel.total - peopleCount - booked >= 0;
+  }
+  createBooking(body) {
+    const hotelData = FakeHotels.fakeHotels;
+    const hotelIndex = hotelData.findIndex(
+      (hotel) => hotel['id'] == body.hotelId,
+    );
+    if (!hotelData[hotelIndex]['bookings']) {
+      Object.assign(hotelData[hotelIndex], { bookings: [] });
+    }
+    const newBooking = {
+      name: body.name,
+      from: body.from,
+      to: body.to,
+      places: body.peopleCount,
+    };
+    hotelData[hotelIndex]['bookings'].push(newBooking);
+    FakeHotels.saveData(hotelData);
+    return hotelData[hotelIndex].bookings[
+      hotelData[hotelIndex].bookings.length - 1
+    ];
   }
 }
