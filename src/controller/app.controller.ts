@@ -14,7 +14,6 @@ export class AppController {
     @Query('country') country: string,
     @Query('peopleCount') peopleCount: number,
   ) {
-    console.log('params', from, to, city, peopleCount);
     if (!peopleCount || peopleCount == 0) peopleCount = 1;
     const result = this.appService.getHotels(
       country,
@@ -23,12 +22,10 @@ export class AppController {
       to,
       peopleCount,
     );
-    console.log(result);
     return result;
   }
   @Post('/booking')
   createBooking(@Body() bookDto: CreateBookingDto) {
-    console.log(bookDto);
     return this.appService.createBooking(bookDto);
   }
 }

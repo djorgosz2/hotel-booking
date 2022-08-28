@@ -11,8 +11,8 @@ export class AppService {
     to: Date,
     peopleCount: number,
   ): Record<string, unknown> {
-    const fromTime = new Date(from).getTime();
-    const toTime = new Date(from).getTime();
+    const fromTime = new Date(new Date(from).toLocaleDateString()).getTime();
+    const toTime = new Date(new Date(from).toLocaleDateString()).getTime();
     const filters = _.pickBy({ country, city }, _.identity);
     const inCityHotels = _.filter(FakeHotels.fakeHotels, filters);
     return inCityHotels.filter((hotel) =>
@@ -29,8 +29,9 @@ export class AppService {
     let booked = 0;
     //data validation on lower data layers needed
     hotel.bookings.forEach((booking) => {
-      const begin = new Date(booking.from).getTime();
-      const end = new Date(booking.to).getTime();
+      //toLocaleDateString adds 2 hours back
+      const begin = new Date(new Date(from).toLocaleDateString()).getTime();
+      const end = new Date(new Date(from).toLocaleDateString()).getTime();
       if ((from >= begin && from <= end) || (to >= begin && to <= end)) {
         booked = booked + booking.places;
       }
@@ -42,13 +43,15 @@ export class AppService {
     const hotelIndex = hotelData.findIndex(
       (hotel) => hotel['id'] == body.hotelId,
     );
+    if (hotelIndex < 0)
+      throw new Error('No Hotel with ' + body.hotelId + ' id was found');
     if (!hotelData[hotelIndex]['bookings']) {
       Object.assign(hotelData[hotelIndex], { bookings: [] });
     }
     const newBooking = {
       name: body.name,
-      from: body.from,
-      to: body.to,
+      from: new Date(body.from).toLocaleDateString(),
+      to: new Date(body.to).toLocaleDateString(),
       places: body.peopleCount,
     };
     hotelData[hotelIndex]['bookings'].push(newBooking);
